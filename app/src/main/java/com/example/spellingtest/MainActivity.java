@@ -1,6 +1,7 @@
 package com.example.spellingtest;
 
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,20 +17,36 @@ import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String SPELL_FILE = "spelling.txt";
     private static final String[] RANDOM_WORDS = {"about", "brass", "warm", "army", "employ", "funny", "anyone", "half", "raise", "bless", "frost", "straight", "everything", "mouth", "garden", "change", "scratch", "clock", "choose", "town", "lunch", "laugh", "agree", "sand", "penny", "age", "holiday", "string", "bought", "crop", "ask", "body", "balloon", "alone", "herself", "adventure", "bear", "crazy", "neither", "bring", "front", "dollar", "elbow", "really", "lose", "grass", "shelf", "elsewhere", "crawl", "window", "library", "move", "blind", "wrist", "prize", "dinner", "health", "touch", "cracker", "disappear", "always", "compare", "stretch", "afternoon", "stick", "crust", "bedsheet", "sound", "important", "birthday", "swim", "something", "himself", "month", "airplane", "guess", "mouse", "neighbor", "flow", "actor", "hundred", "morning", "alike", "driving", "school", "bare", "throw", "whole", "begin", "shopping", "already", "cheese", "newspaper", "also", "grin", "clear", "bent", "cure", "treat", "without", "mark", "piece", "running", "point", "cardboard", "round", "stairs", "breakfast", "thing", "away", "slept", "better", "bedtime", "children", "desk", "brand", "decimal", "cherry", "enjoy", "baseball", "awake", "happen", "kitchen", "almost", "flower", "thousand", "anything", "scream", "circus", "began", "together", "trouble", "behind", "aloud", "angriest", "caught", "ago", "suit", "churn", "bench", "clothing", "match", "brush", "young", "picnic", "doctor", "listen", "spring", "climb", "wrong", "afraid", "forgot", "along", "riding", "worst", "become", "shiny", "hallway"};
+    static TextToSpeech t1;
+    static String[] myWords;
+    static String myWord;
+    static Random random;
     EditText wordList, answer;
     ImageView talkIcon;
-    Button editButton, saveButton, testButton, clearButton, cancelButton, randomButton, sayButton, cancelTestButton, clearAnswerButton, checkButton;
+    Button editButton, saveButton, testButton, clearButton, cancelButton, randomButton, sayButton, cancelTestButton, clearAnswerButton, checkButton, cheatButton;
     View[] mainScreen, editScreen, testScreen;
+
+    static void say(String toSpeak) {
+        t1.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        random = new Random();
+        t1 = new TextToSpeech(getApplicationContext(), status -> {
+            if (status != TextToSpeech.ERROR) {
+                t1.setLanguage(Locale.US);
+            }
+        });
 
         // MAIN SCREEN
         editButton = findViewById(R.id.editButton);
@@ -51,8 +68,8 @@ public class MainActivity extends AppCompatActivity {
         checkButton = findViewById(R.id.checkButton);
         cancelTestButton = findViewById(R.id.cancelTestButton);
         talkIcon = findViewById(R.id.talkIcon);
-        testScreen = new View[]{answer, sayButton, clearAnswerButton, checkButton, cancelTestButton, talkIcon};
-
+        cheatButton = findViewById(R.id.cheatButton);
+        testScreen = new View[]{answer, sayButton, clearAnswerButton, checkButton, cancelTestButton, talkIcon, cheatButton};
         readFileInEditor();
     }
 
@@ -130,9 +147,26 @@ public class MainActivity extends AppCompatActivity {
 
     // TEST SCREEN
     public void onTestClick(View view) {
+        myWords = wordList.getText().toString().split("\\s+");
+        for (int i = 0; i < myWords.length; i++) {
+            myWords[i] = myWords[i].replaceAll("[^\\w]", "");
+        }
+        if (myWords.length == 0) {
+            myWords = RANDOM_WORDS;
+        }
+        myWord = myWords[random.nextInt(myWords.length)];
         hideAndShow(mainScreen, testScreen);
     }
+
     public void onCheckClick(View view) {
+        String answerText = answer.getText().toString().trim();
+        if (answerText.equals(myWord)) {
+            say("Correct!");
+            myWord = myWords[random.nextInt(myWords.length)];
+            answer.setText("");
+        } else {
+            say("Try again.");
+        }
     }
 
     public void onClearAnswerClick(View view) {
@@ -140,9 +174,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onSayClick(View view) {
+        say("Spell " + myWord);
     }
 
     public void onCancelTestClick(View view) {
         hideAndShow(testScreen, mainScreen);
+    }
+
+    public void onCheatClick(View view) {
+        StringBuilder word = new StringBuilder();
+        for (char c : myWord.toCharArray()) {
+            word.append(c);
+            word.append(" ");
+        }
+        say(word.toString());
     }
 }
