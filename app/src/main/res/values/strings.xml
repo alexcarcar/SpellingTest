@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Spelling Test</string>
+    <string name="add_spelling_words">Add Spelling Words</string>
+    <string name="save_words">Save</string>
+    <string name="cancel_word_list">Cancel</string>
+    <string name="clear_word_list">Clear</string>
+    <string name="random_word_list">Choose</string>
+    <string name="enter_words_here">Enter words here.</string>
+    <string name="spell_word_here">Spell word here.</string>
+    <string name="take_spelling_test">Take Spelling Test</string>
+    <string name="check">Check</string>
+    <string name="say">Say</string>
+</resources>
