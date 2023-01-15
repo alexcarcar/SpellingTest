@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     EditText wordList, answer;
     ImageView talkIcon, bee;
     TextView questionCount;
-    Button editButton, saveButton, testButton, clearButton, cancelButton, randomButton, sayButton, cancelTestButton, clearAnswerButton, checkButton, cheatButton, skipButton;
+    Button editButton, saveButton, testButton, clearButton, cancelButton, randomButton, sayButton, cancelTestButton, clearAnswerButton, cheatButton;
     View[] mainScreen, editScreen, testScreen;
 
     static void say(String toSpeak) {
@@ -74,13 +74,11 @@ public class MainActivity extends AppCompatActivity {
         answer = findViewById(R.id.answer);
         sayButton = findViewById(R.id.sayButton);
         clearAnswerButton = findViewById(R.id.clearAnswerButton);
-        checkButton = findViewById(R.id.checkButton);
         cancelTestButton = findViewById(R.id.cancelTestButton);
         talkIcon = findViewById(R.id.talkIcon);
         cheatButton = findViewById(R.id.cheatButton);
         questionCount = findViewById(R.id.questionCount);
-        skipButton = findViewById(R.id.skipButton);
-        testScreen = new View[]{answer, sayButton, clearAnswerButton, checkButton, cancelTestButton, talkIcon, cheatButton, questionCount, skipButton};
+        testScreen = new View[]{answer, sayButton, clearAnswerButton, cancelTestButton, talkIcon, cheatButton, questionCount};
         readFileInEditor();
 
         answer.addTextChangedListener(new TextWatcher() {
@@ -107,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                         say(lastCharacter);
                     }
                 }
-                checkWord(false, lastCharacter);
+                checkWord(lastCharacter);
                 previousWord = s.toString();
             }
 
@@ -215,17 +213,11 @@ public class MainActivity extends AppCompatActivity {
         say("spell " + myWord);
     }
 
-    public void onCheckClick(View view) {
-        checkWord(true, "");
-    }
-
-    private void checkWord(boolean tryAgain, String lastCharacter) {
+    private void checkWord(String lastCharacter) {
         String answerText = answer.getText().toString().trim();
         if (answerText.equals(myWord)) {
             saySomethingGood(lastCharacter);
-            nextWord(true);
-        } else if (tryAgain) {
-            say("Try again.");
+            nextWord();
         }
     }
 
@@ -234,14 +226,10 @@ public class MainActivity extends AppCompatActivity {
         say(goodText);
     }
 
-    private void nextWord(boolean delay) {
+    private void nextWord() {
         myWordIndex = (myWordIndex + 1) % myWords.size();
         final Handler handler = new Handler(Looper.getMainLooper());
-        if (delay) {
-            handler.postDelayed(this::getWord, 3000);
-        } else {
-            getWord();
-        }
+        handler.postDelayed(this::getWord, 3000);
     }
 
     public void onClearAnswerClick(View view) {
@@ -260,12 +248,9 @@ public class MainActivity extends AppCompatActivity {
         StringBuilder word = new StringBuilder();
         for (char c : myWord.toCharArray()) {
             word.append(c);
-            word.append(" ");
+            word.append(". ");
         }
         say(word.toString());
     }
 
-    public void onSkipClick(View view) {
-        nextWord(false);
-    }
 }

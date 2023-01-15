@@ -8,8 +8,6 @@
     <string name="enter_words_here">Enter words here.</string>
     <string name="spell_word_here">Spell word here.</string>
     <string name="take_spelling_test">Take Spelling Test</string>
-    <string name="check">Check</string>
     <string name="say">Say</string>
     <string name="cheat">Cheat</string>
-    <string name="skip">Skip</string>
 </resources>
