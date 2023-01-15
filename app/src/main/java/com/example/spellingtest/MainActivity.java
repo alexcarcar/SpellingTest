@@ -1,11 +1,16 @@
 package com.example.spellingtest;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.speech.tts.TextToSpeech;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,13 +29,16 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String SPELL_FILE = "spelling.txt";
     private static final String[] RANDOM_WORDS = {"about", "brass", "warm", "army", "employ", "funny", "anyone", "half", "raise", "bless", "frost", "straight", "everything", "mouth", "garden", "change", "scratch", "clock", "choose", "town", "lunch", "laugh", "agree", "sand", "penny", "age", "holiday", "string", "bought", "crop", "ask", "body", "balloon", "alone", "herself", "adventure", "bear", "crazy", "neither", "bring", "front", "dollar", "elbow", "really", "lose", "grass", "shelf", "elsewhere", "crawl", "window", "library", "move", "blind", "wrist", "prize", "dinner", "health", "touch", "cracker", "disappear", "always", "compare", "stretch", "afternoon", "stick", "crust", "bedsheet", "sound", "important", "birthday", "swim", "something", "himself", "month", "airplane", "guess", "mouse", "neighbor", "flow", "actor", "hundred", "morning", "alike", "driving", "school", "bare", "throw", "whole", "begin", "shopping", "already", "cheese", "newspaper", "also", "grin", "clear", "bent", "cure", "treat", "without", "mark", "piece", "running", "point", "cardboard", "round", "stairs", "breakfast", "thing", "away", "slept", "better", "bedtime", "children", "desk", "brand", "decimal", "cherry", "enjoy", "baseball", "awake", "happen", "kitchen", "almost", "flower", "thousand", "anything", "scream", "circus", "began", "together", "trouble", "behind", "aloud", "angriest", "caught", "ago", "suit", "churn", "bench", "clothing", "match", "brush", "young", "picnic", "doctor", "listen", "spring", "climb", "wrong", "afraid", "forgot", "along", "riding", "worst", "become", "shiny", "hallway"};
+    private static final String[] POSITIVE_PHRASES = {"All Right!", "Exactly right", "Excellent!", "Exceptional", "Fabulous!", "Fantastic!", "Sensational!", "Wonderful!", "Outstanding!", "That's it!", "Just right!", "Unbelievable", "Way to go!", "Simply superb", "Stupendous!", "Magnificent", "Marvelous!", "First class job", "First class work", "Good for you!", "That's great", "Good going!", "Good thinking", "Right on!", "Better than ever!", "I'm impressed!", "You're one of a kind", "You've got it now.", "You've mastered it!", "What an improvement!", "You always amaze me", "You are fantastic", "You are learning a lot", "You are learning fast", "You are so good", "You did it that time!", "You did that very well", "You don't miss a thing", "You got it right!", "You hit the target", "I'm very proud of you", "Keep up the great work!", "Nothing can stop you now", "Now you've figured it out", "You make it look easy", "You haven't missed a thing", "You did that all by yourself", "That's really nice work!", "You're doing beautifully!", "You are very good at that", "That's the way to do it", "It's perfect!", "Nice going!", "That's right!", "Well done", "I'm speechless!", "Great work", "Keep it up!", "You got it!", "Not bad at all!", "That's the way!", "Now you have it", "I knew you could do it!", "Great improvement!", "That's it exactly", "That's the best ever", "That's the way to do it", "Couldn't have done it better myself", "Tremendous job", "You're doing well", "You're learning fast", "That's the right way to do it", "You're doing a great job", "Your studying really paid off", "You must have been practicing", "You're on the right track now", "You're getting better every day", "I've never seen anyone do it better", "It looks like you've put a lot of work into this", "Now that's what I call a great job", "That's the right way to do it", "You certainly did well today."};
     static TextToSpeech t1;
-    static String[] myWords;
-    static String myWord;
+    static List<String> myWords;
+    static String myWord, previousWord;
+    static int myWordIndex;
     static Random random;
     EditText wordList, answer;
-    ImageView talkIcon;
-    Button editButton, saveButton, testButton, clearButton, cancelButton, randomButton, sayButton, cancelTestButton, clearAnswerButton, checkButton, cheatButton;
+    ImageView talkIcon, bee;
+    TextView questionCount;
+    Button editButton, saveButton, testButton, clearButton, cancelButton, randomButton, sayButton, cancelTestButton, clearAnswerButton, checkButton, cheatButton, skipButton;
     View[] mainScreen, editScreen, testScreen;
 
     static void say(String toSpeak) {
@@ -51,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
         // MAIN SCREEN
         editButton = findViewById(R.id.editButton);
         testButton = findViewById(R.id.testButton);
-        mainScreen = new View[]{editButton, testButton};
+        bee = findViewById(R.id.bee);
+        mainScreen = new View[]{editButton, testButton, bee};
 
         // EDIT SCREEN
         wordList = findViewById(R.id.wordList);
@@ -69,8 +78,44 @@ public class MainActivity extends AppCompatActivity {
         cancelTestButton = findViewById(R.id.cancelTestButton);
         talkIcon = findViewById(R.id.talkIcon);
         cheatButton = findViewById(R.id.cheatButton);
-        testScreen = new View[]{answer, sayButton, clearAnswerButton, checkButton, cancelTestButton, talkIcon, cheatButton};
+        questionCount = findViewById(R.id.questionCount);
+        skipButton = findViewById(R.id.skipButton);
+        testScreen = new View[]{answer, sayButton, clearAnswerButton, checkButton, cancelTestButton, talkIcon, cheatButton, questionCount, skipButton};
         readFileInEditor();
+
+        answer.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String currentWord = s.toString();
+                char c = ' ';
+                String lastCharacter = "";
+                if (!currentWord.isEmpty()) {
+                    if (previousWord.isEmpty() && currentWord.length() == 1) {
+                        c = currentWord.charAt(0);
+                    } else if (!previousWord.isEmpty() && currentWord.length() - previousWord.length() == 1) {
+                        if (currentWord.startsWith(previousWord)) {
+                            c = currentWord.charAt(currentWord.length() - 1);
+                        }
+                    }
+                    if (c != ' ') {
+                        lastCharacter = "" + c + ". ";
+                        say(lastCharacter);
+                    }
+                }
+                checkWord(false, lastCharacter);
+                previousWord = s.toString();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     public void saveTextPad() {
@@ -147,25 +192,55 @@ public class MainActivity extends AppCompatActivity {
 
     // TEST SCREEN
     public void onTestClick(View view) {
-        myWords = wordList.getText().toString().split("\\s+");
-        for (int i = 0; i < myWords.length; i++) {
-            myWords[i] = myWords[i].replaceAll("[^\\w]", "");
+        String[] words;
+        words = wordList.getText().toString().split("\\s+");
+        for (int i = 0; i < words.length; i++) {
+            words[i] = words[i].replaceAll("\\W", "");
         }
-        if (myWords.length == 0) {
-            myWords = RANDOM_WORDS;
+        if (words.length == 0) {
+            words = RANDOM_WORDS;
         }
-        myWord = myWords[random.nextInt(myWords.length)];
+        myWords = Arrays.asList(words);
+        Collections.shuffle(myWords);
+        myWordIndex = 0;
+        getWord();
         hideAndShow(mainScreen, testScreen);
     }
 
+    private void getWord() {
+        myWord = myWords.get(myWordIndex);
+        answer.setText("");
+        String text = (myWordIndex + 1) + "/" + myWords.size();
+        questionCount.setText(text);
+        say("spell " + myWord);
+    }
+
     public void onCheckClick(View view) {
+        checkWord(true, "");
+    }
+
+    private void checkWord(boolean tryAgain, String lastCharacter) {
         String answerText = answer.getText().toString().trim();
         if (answerText.equals(myWord)) {
-            say("Correct!");
-            myWord = myWords[random.nextInt(myWords.length)];
-            answer.setText("");
-        } else {
+            saySomethingGood(lastCharacter);
+            nextWord(true);
+        } else if (tryAgain) {
             say("Try again.");
+        }
+    }
+
+    private void saySomethingGood(String lastCharacter) {
+        String goodText = lastCharacter + " " + POSITIVE_PHRASES[random.nextInt(POSITIVE_PHRASES.length)];
+        say(goodText);
+    }
+
+    private void nextWord(boolean delay) {
+        myWordIndex = (myWordIndex + 1) % myWords.size();
+        final Handler handler = new Handler(Looper.getMainLooper());
+        if (delay) {
+            handler.postDelayed(this::getWord, 3000);
+        } else {
+            getWord();
         }
     }
 
@@ -174,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onSayClick(View view) {
-        say("Spell " + myWord);
+        say(myWord);
     }
 
     public void onCancelTestClick(View view) {
@@ -188,5 +263,9 @@ public class MainActivity extends AppCompatActivity {
             word.append(" ");
         }
         say(word.toString());
+    }
+
+    public void onSkipClick(View view) {
+        nextWord(false);
     }
 }
