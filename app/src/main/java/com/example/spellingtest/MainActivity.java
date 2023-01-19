@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -32,13 +33,14 @@ public class MainActivity extends AppCompatActivity {
     private static final String[] POSITIVE_PHRASES = {"All Right!", "Exactly right", "Excellent!", "Exceptional", "Fabulous!", "Fantastic!", "Sensational!", "Wonderful!", "Outstanding!", "That's it!", "Just right!", "Unbelievable", "Way to go!", "Simply superb", "Stupendous!", "Magnificent", "Marvelous!", "First class job", "First class work", "Good for you!", "That's great", "Good going!", "Good thinking", "Right on!", "Better than ever!", "I'm impressed!", "You're one of a kind", "You've got it now.", "You've mastered it!", "What an improvement!", "You always amaze me", "You are fantastic", "You are learning a lot", "You are learning fast", "You are so good", "You did it!", "You did that very well", "You don't miss a thing", "You got it right!", "You hit the target", "I'm very proud of you", "Keep up the great work!", "Nothing can stop you now", "Now you've figured it out", "You make it look easy", "You haven't missed a thing", "You did that all by yourself", "That's really nice work!", "You're doing beautifully!", "You are very good at that", "That's the way to do it", "It's perfect!", "Nice going!", "That's right!", "Well done", "I'm speechless!", "Great work", "Keep it up!", "You got it!", "Not bad at all!", "That's the way!", "Now you have it", "I knew you could do it!", "Great improvement!", "That's it exactly", "That's the best ever", "That's the way to do it", "Couldn't have done it better myself", "Tremendous job", "You're doing well", "You're learning fast", "That's the right way to do it", "You're doing a great job", "Your studying really paid off", "You must have been practicing", "You're on the right track now", "You're getting better every day", "I've never seen anyone do it better", "It looks like you've put a lot of work into this", "Now that's what I call a great job", "That's the right way to do it", "You certainly did well today."};
     static TextToSpeech t1;
     static List<String> myWords;
-    static String myWord, previousWord;
+    static List<String> mySentences;
+    static String myWord, mySentence, previousWord;
     static int myWordIndex;
     static Random random;
     EditText wordList, answer;
     ImageView talkIcon, bee;
     TextView questionCount;
-    Button editButton, saveButton, testButton, clearButton, cancelButton, randomButton, sayButton, cancelTestButton, clearAnswerButton, cheatButton;
+    Button editButton, saveButton, testButton, clearButton, cancelButton, randomButton, sayButton, cancelTestButton, clearAnswerButton, cheatButton, sentenceButton;
     View[] mainScreen, editScreen, testScreen;
 
     static void say(String toSpeak) {
@@ -78,7 +80,8 @@ public class MainActivity extends AppCompatActivity {
         talkIcon = findViewById(R.id.talkIcon);
         cheatButton = findViewById(R.id.cheatButton);
         questionCount = findViewById(R.id.questionCount);
-        testScreen = new View[]{answer, sayButton, clearAnswerButton, cancelTestButton, talkIcon, cheatButton, questionCount};
+        sentenceButton = findViewById(R.id.sentenceButton);
+        testScreen = new View[]{answer, sayButton, clearAnswerButton, cancelTestButton, talkIcon, cheatButton, questionCount, sentenceButton};
         readFileInEditor();
 
         answer.addTextChangedListener(new TextWatcher() {
@@ -101,11 +104,13 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                     if (c != ' ') {
-                        lastCharacter = "" + c + ". ";
-                        say(lastCharacter);
+                        if (c == '\'') {
+                            lastCharacter = "apostrophe. ";
+                        } else {
+                            lastCharacter = "" + c + ". ";
+                        } say(lastCharacter);
                     }
-                }
-                checkWord(lastCharacter);
+                } checkWord(lastCharacter);
                 previousWord = s.toString();
             }
 
@@ -192,14 +197,16 @@ public class MainActivity extends AppCompatActivity {
     public void onTestClick(View view) {
         String[] words;
         words = wordList.getText().toString().split("\\s+");
-        for (int i = 0; i < words.length; i++) {
-            words[i] = words[i].replaceAll("\\W", "");
-        }
         if (words.length == 0) {
             words = RANDOM_WORDS;
         }
-        myWords = Arrays.asList(words);
-        Collections.shuffle(myWords);
+        myWords = new ArrayList<>();
+        mySentences = new ArrayList<>();
+        Parse.intoSentences(words, myWords, mySentences);
+        ArrayList[] shuffled = Parse.shuffle(myWords, mySentences);
+        myWords = shuffled[0];
+        mySentences = shuffled[1];
+        // Collections.shuffle(myWords);
         myWordIndex = 0;
         getWord();
         hideAndShow(mainScreen, testScreen);
@@ -207,10 +214,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void getWord() {
         myWord = myWords.get(myWordIndex);
+        mySentence = mySentences.get(myWordIndex);
         answer.setText("");
         String text = (myWordIndex + 1) + "/" + myWords.size();
         questionCount.setText(text);
         say("spell " + myWord);
+        sentenceButton.setVisibility(mySentence.isEmpty() ? View.GONE : View.VISIBLE);
     }
 
     private void checkWord(String lastCharacter) {
@@ -247,10 +256,17 @@ public class MainActivity extends AppCompatActivity {
     public void onCheatClick(View view) {
         StringBuilder word = new StringBuilder();
         for (char c : myWord.toCharArray()) {
-            word.append(c);
+            if (c == '\'') {
+                word.append("apostrophe");
+            } else {
+                word.append(c);
+            }
             word.append(". ");
         }
         say(word.toString());
     }
 
+    public void onSentenceClick(View view) {
+        say(mySentence);
+    }
 }

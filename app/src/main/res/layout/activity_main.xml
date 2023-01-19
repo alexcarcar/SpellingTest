@@ -105,7 +105,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:digits="abcdefghijklmnopqrstuvwxyz"
+        android:digits="abcdefghijklmnopqrstuvwxyz'"
         android:hint="@string/spell_word_here"
         android:inputType="textNoSuggestions|textVisiblePassword"
         android:textSize="16pt"
@@ -161,6 +161,23 @@
             android:onClick="onCancelTestClick"
             android:text="@string/cancel_word_list"
             android:visibility="gone" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/sentenceButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:onClick="onSentenceClick"
+            android:text="@string/sentence"
+            android:visibility="gone" />
+
     </LinearLayout>
 
     <ImageView
