@@ -1,4 +1,4 @@
-package common;
+package alex.common;
 
 import android.view.View;
 

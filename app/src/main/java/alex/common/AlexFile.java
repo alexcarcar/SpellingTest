@@ -1,4 +1,4 @@
-package common;
+package alex.common;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -8,8 +8,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-
-import alex.common.AlexList;
 
 public class AlexFile {
     public static ArrayList<String> readAsList(Resources resources, int rawFile) {

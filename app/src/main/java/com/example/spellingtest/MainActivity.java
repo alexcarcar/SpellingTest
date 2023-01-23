@@ -19,10 +19,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import common.AlexFile;
-import common.AlexView;
-import common.voice.AlexVoice;
-import common.voice.PositivePhrases;
+import alex.common.AlexFile;
+import alex.common.AlexView;
+import alex.common.voice.AlexVoice;
+import alex.common.voice.PositivePhrases;
 
 public class MainActivity extends AppCompatActivity {
 

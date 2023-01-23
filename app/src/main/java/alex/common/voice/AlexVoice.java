@@ -1,4 +1,4 @@
-package common.voice;
+package alex.common.voice;
 
 import android.content.Context;
 import android.speech.tts.TextToSpeech;

@@ -1,4 +1,4 @@
-package common.voice;
+package alex.common.voice;
 
 import java.util.Random;
 
