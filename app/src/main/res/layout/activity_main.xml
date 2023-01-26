@@ -3,8 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal"
     android:orientation="vertical"
     tools:context=".MainActivity">
+
+    <include
+        layout="@layout/flash_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <!-- MAIN SCREEN -->
     <Button
@@ -13,7 +19,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:onClick="onEditClick"
-        android:text="@string/add_spelling_words" />
+        android:text="@string/add_spelling_words"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/testButton"
@@ -21,14 +28,16 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:onClick="onTestClick"
-        android:text="@string/take_spelling_test" />
+        android:text="@string/take_spelling_test"
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/bee"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/bee" />
+        android:src="@drawable/bee"
+        android:visibility="gone" />
 
     <!-- EDIT SCREEN -->
     <EditText
@@ -98,7 +107,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textColor="#ffffff"
-        android:textSize="16pt" />
+        android:textSize="16pt"
+        android:visibility="gone" />
 
     <EditText
         android:id="@+id/answer"

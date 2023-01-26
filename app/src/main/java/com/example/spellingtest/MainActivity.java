@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,7 +38,8 @@ public class MainActivity extends AppCompatActivity {
     ImageView talkIcon, bee;
     TextView questionCount;
     Button editButton, saveButton, testButton, clearButton, cancelButton, randomButton, sayButton, cancelTestButton, clearAnswerButton, cheatButton, sentenceButton;
-    View[] mainScreen, editScreen, testScreen;
+    LinearLayout flashLayout;
+    View[] mainScreen, editScreen, testScreen, flashScreen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,10 @@ public class MainActivity extends AppCompatActivity {
         testButton = findViewById(R.id.testButton);
         bee = findViewById(R.id.bee);
         mainScreen = new View[]{editButton, testButton, bee};
+
+        // FLASH SCREEN
+        flashLayout = findViewById(R.id.flashLayout);
+        flashScreen = new View[]{flashLayout};
 
         // EDIT SCREEN
         wordList = findViewById(R.id.wordList);
@@ -108,6 +114,20 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        final Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(this::showFlashScreen, 1000);
+    }
+
+    private void showFlashScreen() {
+        String toSpeak = getResources().getString(R.string.flash_screen_tag);
+        AlexVoice.say(toSpeak);
+        flashLayout.setVisibility(View.VISIBLE);
+        final Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(this::hideFlashScreen, 3500);
+    }
+
+    private void hideFlashScreen() {
+        AlexView.hideAndShow(flashScreen, mainScreen);
     }
 
     public void saveTextPad() {
