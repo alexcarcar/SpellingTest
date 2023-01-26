@@ -162,10 +162,9 @@ public class MainActivity extends AppCompatActivity {
         myWords = new ArrayList<>();
         mySentences = new ArrayList<>();
         Parse.intoSentences(words, myWords, mySentences);
-        ArrayList[] shuffled = Parse.shuffle(myWords, mySentences);
-        myWords = shuffled[0];
-        mySentences = shuffled[1];
-        // Collections.shuffle(myWords);
+        ArrayList<ArrayList<String>> shuffled = Parse.shuffle(myWords, mySentences);
+        myWords = shuffled.get(0);
+        mySentences = shuffled.get(1);
         myWordIndex = 0;
         getWord();
         AlexView.hideAndShow(mainScreen, testScreen);

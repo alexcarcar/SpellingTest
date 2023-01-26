@@ -54,7 +54,7 @@ public class Parse {
     }
 
 
-    public static ArrayList[] shuffle(List<String> myWords, List<String> mySentences) {
+    public static ArrayList<ArrayList<String>> shuffle(List<String> myWords, List<String> mySentences) {
         ArrayList<Integer> order = new ArrayList<>();
         ArrayList<String> shuffledWords = new ArrayList<>();
         ArrayList<String> shuffledSentences = new ArrayList<>();
@@ -67,6 +67,9 @@ public class Parse {
             shuffledSentences.add(mySentences.get(order.get(i)));
         }
 
-        return new ArrayList[]{shuffledWords, shuffledSentences};
+        ArrayList<ArrayList<String>> list = new ArrayList<>();
+        list.add(shuffledWords);
+        list.add(shuffledSentences);
+        return list;
     }
 }
