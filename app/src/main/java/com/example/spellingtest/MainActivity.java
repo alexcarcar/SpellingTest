@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         editButton = findViewById(R.id.editButton);
         testButton = findViewById(R.id.testButton);
         bee = findViewById(R.id.bee);
-        mainScreen = new View[]{editButton, testButton, bee};
+        mainScreen = new View[]{findViewById(R.id.mainLayout)};
 
         // FLASH SCREEN
         flashLayout = findViewById(R.id.flashLayout);
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         clearButton = findViewById(R.id.clearButton);
         cancelButton = findViewById(R.id.cancelButton);
         randomButton = findViewById(R.id.randomButton);
-        editScreen = new View[]{wordList, saveButton, clearButton, randomButton, cancelButton};
+        editScreen = new View[]{findViewById(R.id.editLayout)};
 
         // TEST SCREEN
         answer = findViewById(R.id.answer);
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         cheatButton = findViewById(R.id.cheatButton);
         questionCount = findViewById(R.id.questionCount);
         sentenceButton = findViewById(R.id.sentenceButton);
-        testScreen = new View[]{answer, sayButton, clearAnswerButton, cancelTestButton, talkIcon, cheatButton, questionCount, sentenceButton};
+        testScreen = new View[]{findViewById(R.id.testLayout)};
         readFileInEditor();
 
         answer.addTextChangedListener(new TextWatcher() {
@@ -98,9 +98,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                     if (c != ' ') {
                         if (c == '\'') {
-                            lastCharacter = "apostrophe. ";
+                            lastCharacter = "apostrophe; ";
                         } else {
-                            lastCharacter = "" + c + ". ";
+                            lastCharacter = "" + c + "; ";
                         }
                         AlexVoice.say(lastCharacter);
                     }
@@ -114,8 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        final Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(this::showFlashScreen, 1000);
+        AlexView.showFlashScreen(findViewById(R.id.flashLayout), findViewById(R.id.flashCar1), findViewById(R.id.flashCar2), mainScreen, getResources().getString(R.string.flash_screen_tag));
     }
 
     private void showFlashScreen() {

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -19,7 +20,7 @@ public class AlexFile {
             }
             inputStream.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return list;
     }
@@ -39,7 +40,7 @@ public class AlexFile {
                 in.close();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return list;
     }
@@ -54,7 +55,27 @@ public class AlexFile {
             out.write(toSave);
             out.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
+    }
+
+    public static String[] getFiles(Context context) {
+        return context.getFilesDir().list();
+    }
+
+    public static boolean deleteFile(Context context, String filename) {
+        try {
+            File[] files = context.getFilesDir().listFiles();
+            if (files == null) return false;
+            for (File file : files) {
+                if (file.getName().equals(filename)) {
+                    file.delete();
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
     }
 }
