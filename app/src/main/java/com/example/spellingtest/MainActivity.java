@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                         if (c == '\'') {
                             lastCharacter = "apostrophe; ";
                         } else {
-                            lastCharacter = "" + c + "; ";
+                            lastCharacter = c + "; ";
                         }
                         AlexVoice.say(lastCharacter);
                     }
